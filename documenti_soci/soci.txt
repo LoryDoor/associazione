@@ -1,0 +1,2 @@
+0001;porta;lorenzo;2007-04-05;M;1.80;studente;lorenzo.porta@studenti.fauser.edu;3317004380;fototessera_porta_lorenzo_1.jpg;carta_identita_porta_lorenzo_1.pdf;presentazione_porta_lorenzo_1.txt;qrcode_porta_lorenzo_1.png;tessera_porta_lorenzo_1.pdf;2025-11-26 13:00:07;EFFETTIVO
+0002;baldinu;davide;2007-10-15;M;1.75;studente;davide.baldinu@studenti.fauser.edu;3338766992;fototessera_baldinu_davide_1.jpg;carta_identita_baldinu_davide_1.pdf;presentazione_baldinu_davide_1.txt;qrcode_baldinu_davide_1.png;tessera_baldinu_davide_1.pdf;2025-12-13 13:45:12;REGISTRATO

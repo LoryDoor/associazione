@@ -1,0 +1,402 @@
+/* =================================================== VARIABILI CSS =================================================== */
+:root {
+    /* Colori principali */
+    --primary-yellow: #efbf0c;
+    --primary-green: #27ae60;
+    --primary-green-hover: #2a8f54;
+    --primary-blue: #007bff;
+    --primary-red: #ca1717;
+    --primary-red-hover: #9f1e1e;
+
+    /* Colori di sfondo */
+    --bg-light-green: #d5f4d5;
+    --bg-footer: #8c8c8c;
+    --bg-white: white;
+    --bg-darkgray: darkgray;
+
+    /* Colori testo */
+    --text-special: white;
+
+    /* Ombre */
+    --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 8px 12px rgba(0, 0, 0, 0.2);
+    --shadow-yellow: 0 8px 12px rgba(239, 191, 12, 0.2);
+
+    /* Bordi */
+    --border-radius: 5px;
+    --border-yellow: 3px solid var(--primary-yellow);
+}
+
+/* ================================================ FORMATTAZIONE BASE ================================================ */
+
+/* Imposta layout flessibile per tutta la pagina */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header fisso in alto con bordo giallo caratteristico */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* Assicura che l'header sia sopra gli altri elementi */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background: var(--bg-white);
+    border: var(--border-yellow);
+    border-radius: var(--border-radius);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Area principale con sfondo verde chiaro */
+main {
+    flex: 1; /* Occupa tutto lo spazio disponibile */
+    background: var(--bg-light-green);
+}
+
+footer {
+    background-color: var(--bg-footer);
+    color: var(--text-special);
+    text-align: center;
+    padding: 40px 0;
+    font-size: 16px;
+    width: 100%;
+}
+
+/* ================================================= ELEMENTI GENERICI ================================================= */
+
+/* Spaziatura standard per i div */
+div {
+    margin: 40px;
+    padding: 20px;
+}
+
+/* Stile per tabelle centrate */
+table {
+    margin: auto;
+    border-collapse: collapse;
+}
+
+/* Dimensioni titoli */
+h1 {
+    font-size: 3em;
+}
+
+h2 {
+    font-size: 1.5em;
+}
+
+/* ============================================== CLASSI PER CONTENITORI ============================================== */
+
+/* Contenitore principale con bordo giallo */
+.container {
+    text-align: center;
+    background-color: var(--bg-white);
+    border: var(--border-yellow);
+    border-radius: var(--border-radius);
+}
+
+/* Titoli gialli all'interno dei contenitori */
+.container h1,
+.container h2 {
+    color: var(--primary-yellow);
+}
+
+/* Link all'interno dei contenitori */
+.container a {
+    text-decoration: none;
+    color: var(--primary-yellow);
+}
+
+.container a:hover {
+    text-decoration: underline;
+}
+
+/* Contenitore allineato a destra (per header) */
+.container-right {
+    margin: 0;
+    padding: 0;
+    text-align: right;
+}
+
+/* Contenitore specifico per l'header */
+.header-container {
+    display: inline-block;
+    margin: auto;
+    gap: 20px;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Contenitore flessibile per le card soci */
+.container-soci {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    padding: 5px;
+}
+
+/* Contenitore per tabelle soci */
+.container-soci-table {
+    margin: auto;
+    padding: 0;
+}
+
+/* ============================================== PULSANTI E INTERAZIONI ============================================== */
+
+/* Pulsante principale verde con bordo giallo */
+input.button-main {
+    margin: 20px auto;
+    padding: 20px;
+    width: 100%;
+    font-size: 20px;
+    color: var(--text-special);
+    font-weight: bold;
+    background: var(--primary-green);
+    border: var(--border-yellow);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    box-shadow: var(--shadow-light);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+input.button-main:hover {
+    background-color: var(--primary-green-hover);
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-medium);
+}
+
+/* Pulsante rosso */
+input.button-red {
+    margin: 20px auto;
+    padding: 20px;
+    color: var(--text-special);
+    font-weight: bold;
+    background: var(--primary-red);
+    border: 3px solid var(--primary-red);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    box-shadow: var(--shadow-light);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+input.button-red:hover {
+    background-color: var(--primary-red-hover);
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-medium);
+}
+
+/* Pulsante verde */
+input.button-green {
+    margin: 20px auto;
+    padding: 20px;
+    color: var(--text-special);
+    font-weight: bold;
+    background: var(--primary-green);
+    border: 3px solid var(--primary-green);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    box-shadow: var(--shadow-light);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+input.button-green:hover {
+    background-color: var(--primary-green-hover);
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-medium);
+}
+
+/* Link stilizzato come pulsante */
+a.button {
+    display: block;
+    padding: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    color: var(--text-special);
+    background-color: var(--primary-blue);
+    border: 1px solid var(--primary-blue);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    box-shadow: var(--shadow-light);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+a.button:hover {
+    background-color: var(--primary-blue);
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-medium);
+}
+
+/* ================================================ SCHEDE SOCI (CARD) ================================================ */
+
+/* Card per visualizzazione soci in griglia */
+.card-socio {
+    background-color: var(--bg-white);
+    border: 1px solid var(--primary-yellow);
+    border-radius: 10px;
+    box-shadow: var(--shadow-light);
+    width: 300px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-socio:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-medium);
+}
+
+.card-socio a {
+    display: block;
+    margin-top: 10px;
+    background-color: #28a745;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    color: var(--text-special);
+    text-decoration: none;
+}
+
+.card-socio a:hover {
+    background-color: #1e7e34;
+}
+
+/* ============================================== PAGINA DI REGISTRAZIONE ============================================== */
+
+/* Stile per link "Registrati" */
+.registrati {
+    line-height: 2;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-yellow);
+    text-decoration: none;
+}
+
+.registrati:hover {
+    text-decoration: underline;
+}
+
+/* ================================================= TABELLE DATI SOCI ================================================= */
+
+/* Tabella per visualizzazione lista soci */
+th.soci-table {
+    font-size: 11px;
+    text-align: center;
+    padding: 6px;
+    background: var(--bg-darkgray);
+    border: 2px solid black;
+}
+
+td.soci-table {
+    font-size: 11px;
+    text-align: center;
+    padding: 6px;
+    border: 2px solid black;
+}
+
+td.soci-table a {
+    color: var(--primary-blue);
+    text-decoration: none;
+}
+
+td.soci-table a:hover {
+    text-decoration: underline;
+}
+
+/* Pulsanti ridimensionati per tabelle */
+td.soci-table .button-green,
+td.soci-table .button-red {
+    margin: 5px auto;
+    padding: 5px;
+    font-size: 10px;
+}
+
+/* Disabilita effetto hover esagerato in tabella */
+td.soci-table .button-green:hover {
+    background-color: var(--primary-green-hover);
+    transform: none; /* Rimuove lo spostamento in tabelle */
+}
+
+td.soci-table .button-red:hover {
+    background-color: var(--primary-red-hover);
+    transform: none; /* Rimuove lo spostamento in tabelle */
+}
+
+/* =================================================== FORM E INPUT =================================================== */
+
+/* Dimensioni base per input */
+input {
+    font-size: 16px;
+}
+
+/* Tabella per form (allineamento label-value) */
+.form-table {
+    margin: 0;
+}
+
+th.form-table {
+    font-size: 18px;
+    text-align: right;
+}
+
+td.form-table {
+    padding: 15px;
+    font-size: 16px;
+    text-align: left;
+}
+
+/* =============================================== PAGINA PROFILO SOCIO =============================================== */
+
+/* Immagine tessera con ombra gialla */
+img.fototessera {
+    max-height: 200px;
+    max-width: 150px;
+    box-shadow: var(--shadow-yellow);
+}
+
+/* Cella per foto tessera con bordo giallo */
+td.fototessera {
+    padding: 10px;
+    border: var(--border-yellow);
+    border-radius: var(--border-radius);
+}
+
+/* Stile per informazioni socio in tabella profilo */
+th.info-socio {
+    padding: 10px 10px 10px 40px;
+    text-align: right;
+}
+
+td.info-socio {
+    padding: 10px;
+    text-align: left;
+}
+
+.info-socio {
+    font-size: 16px;
+}
+
+/* Paragrafo di presentazione giustificato */
+p.presentazione {
+    padding: 10px;
+    text-align: justify;
+}
+
+/* ================================================= MESSAGGI DI STATO ================================================= */
+
+/* Messaggi di log/informazione */
+.log {
+    color: darkblue;
+    font-size: 18px;
+}
+
+/* Messaggi di errore */
+.errore {
+    color: red;
+    font-size: 18px;
+}

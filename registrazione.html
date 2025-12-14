@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--
+    FILE: associazione/registrazione.html
+    Contenuto: Form di registrazione all'associazione
+    AUTORE: Lorenzo Porta - 5FIN - ITT "G. Fauser" di Novara
+    ULTIMA MODIFICA: 14/12/2025
+-->
+
+<html lang="it">
+    <head>
+        <meta charset="utf-8">
+        <link href="style.css" rel="stylesheet" type="text/css">
+        <link href="resources/favicon.ico" rel="icon" type="image/vnd.microsoft.icon">
+        <title>Diventa socio</title>
+    </head>
+
+    <body>
+        <main>
+            <div class="container">
+                <a href="index.php">Torna alla pagina principale</a>
+            </div>
+            <div class="container">
+                <h1>Diventa socio!</h1>
+                <p>
+                    Compila il form qui sotto per registrarti alla nostra associazione.<br>
+                    Un amministratore rivederà i tuoi dati e se sarà tutto ok diventerai un socio effettivo.<br>
+                    <br>
+                    Ti consigliamo di non includere dati personali nella tua presentazione in quanto, una volta diventato socio effettivo sarà pubblicata sul nostro sito.
+                </p>
+            </div>
+
+            <div class="container">
+                <form method="post" enctype="multipart/form-data" action="elabora-registrazione.php">
+                    <table>
+                        <tr class="form-table">
+                            <th class="form-table"><label for="txtCognome">Cognome:</label></th>
+                            <td class="form-table"><input type="text" name="cognome" id="txtCognome" required></td>
+                        </tr>
+                        <tr class="form-table">
+                            <th class="form-table"><label for="txtNome">Nome:</label></th>
+                            <td class="form-table"><input type="text" name="nome" id="txtNome" required></td>
+                        </tr>
+                        <tr class="form-table">
+                            <th class="form-table"><label for="txtDataNascita">Data di nascita:</label></th>
+                            <td class="form-table"><input type="date" name="data-nascita" id="txtDataNascita" required></td>
+                        </tr>
+                        <tr class="form-table">
+                            <th class="form-table">Sesso:</th>
+                            <td>
+                                <table class="form-table">
+                                    <tr class="form-table">
+                                        <td class="form-table"><input type="radio" name="sesso" id="radioM" value="M" checked></td>
+                                        <td class="form-table"><label for="radioM">M</label></td>
+                                    </tr>
+                                    <tr class="form-table">
+                                        <td class="form-table"><input type="radio" name="sesso" id="radioF" value="F"></td>
+                                        <td class="form-table"><label for="radioF">F</label></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr class="form-table">
+                            <th class="form-table"><label for="txtAltezza">Altezza:</label></th>
+                            <td class="form-table"><input type="number" name="altezza" id="txtAltezza" min="0.80" max="2.30" step="0.01" required> metri</td>
+                        </tr>
+                        <tr class="form-table">
+                            <th class="form-table">Professione:</th>
+                            <td>
+                                <table class="form-table">
+                                    <tr class="form-table">
+                                        <td class="form-table"><input type="radio" name="professione" id="radioProf1" value="impiegato" checked></td>
+                                        <td class="form-table"><label for="radioProf1">Impiegato</label></td>
+                                    </tr>
+                                    <tr class="form-table">
+                                        <td class="form-table"><input type="radio" name="professione" id="radioProf2" value="funzionario"></td>
+                                        <td class="form-table"><label for="radioProf2">Funzionario</label></td>
+                                    </tr>
+                                    <tr class="form-table">
+                                        <td class="form-table"><input type="radio" name="professione" id="radioProf3" value="libero professionista"></td>
+                                        <td class="form-table"><label for="radioProf3">Libero professionista</label></td>
+                                    </tr>
+                                    <tr class="form-table">
+                                        <td class="form-table"><input type="radio" name="professione" id="radioProf4" value="studente"></td>
+                                        <td class="form-table"><label for="radioProf4">Studente</label></td>
+                                    </tr>
+                                    <tr class="form-table">
+                                        <td class="form-table"><input type="radio" name="professione" id="radioProf5" value="pensionato"></td>
+                                        <td class="form-table"><label for="radioProf5">Pensionato</label></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr class="form-table">
+                            <th class="form-table"><label for="txtEmail">Email:</label></th>
+                            <td class="form-table"><input type="email" name="email" id="txtEmail" required></td>
+                        </tr>
+                        <tr class="form-table">
+                            <th class="form-table"><label for="txtTelefono">Telefono:</label></th>
+                            <td class="form-table"><input type="tel" name="telefono" id="txtTelefono" required></td>
+                        </tr>
+                        <tr class="form-table">
+                            <th class="form-table"><label for="fileFototessera">Fototessera (file in formato jpg):</label></th>
+                            <td class="form-table"><input type="file" name="fototessera" id="fileFototessera" accept="image/jpeg" required></td>
+                        </tr>
+                        <tr class="form-table">
+                            <th class="form-table"><label for="fileCartaIdentità">Carta di identità (file in formato pdf):</label></th>
+                            <td class="form-table"><input type="file" name="cartaidentita" id="fileCartaIdentità" accept="application/pdf" required></td>
+                        </tr>
+                        <tr class="form-table">
+                            <th class="form-table"><label for="txtaPresentazione">Presentati:</label></th>
+                            <td class="form-table"><textarea name="presentazione" id="txtaPresentazione" rows="10"></textarea></td>
+                        </tr>
+                    </table>
+                    <input type="submit" class="button-main" name="registrati" value="Registrati">
+                </form>
+            </div>
+        </main>
+
+        <footer>
+            Sito realizzato a scopo didattico.
+            <br>Tutte le funzioni sono a solo scopo dimostrativo.
+            <br><br>
+            Autore: Lorenzo Porta,  Classe 5FIN, AS: 2025/2026
+            <br>ITT "G. Fauser" Via G. B. Ricci, 14, 28100, Novara, Italia.
+        </footer>
+    </body>
+</html>
