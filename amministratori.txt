@@ -1,5 +1,1 @@
 LORENZO PORTA;lorenzo.porta@studenti.fauser.edu;$2y$10$c4uVwC0hrbXdG3sl7A6Bm.C9o//XLU4eiGoUETVdKJWgR0RAu/Fu.
-DAVIDE BALDINU;davide.baldinu@studenti.fauser.edu;$2y$10$vojxmqlshMfGJe9UuYTDPeMe88kjMWYmQVkoE9y4ZNzaL8gdPllKq
-FRANCESCO CAMPANELLO;francesco.campanello@studenti.fauser.edu;$2y$10$vFTKtsXYw.bb4g4r7riDcO.j8/D/txHtt0GCCvnpZjpEvgtavu0lW
-MARCO FERRARI;marco.ferrari@docenti.fauser.edu;$2y$10$cvBnx.trPzrY7GcintEXl.53ytfU3FDDOR.GtU8tlsOtaAXfycbZe
-PAOLA PIRRÒ;paola.pirro@docenti.fauser.edu;$2y$10$t.XEHmYTU4xptrSJDJReieI7PMxV7d.FgA3a5EY/TDn4sWBcQK.om
