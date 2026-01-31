@@ -6,8 +6,8 @@
     ULTIMA MODIFICA: 30/01/2026
 */
 const DB_SERVER = "localhost";
-const DB_USER = "db12778";
-const DB_PASS = "Auzue9vq";
+const DB_USER = "root";
+const DB_PASS = "";
 const DB_NAME = "db_associazione";
 
 $mysqli = null;
