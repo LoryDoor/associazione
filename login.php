@@ -6,7 +6,7 @@
         ULTIMA MODIFICA: 12/12/2025
     */
     session_start();
-    include("libs/funzioni.php");
+    require_once "libs/funzioni.php";
 
     if($_SERVER["REQUEST_METHOD"] == "POST"){
         // La pagina viene richiamata tramite post-back per elaborare i dati inseriti dall'utente
@@ -31,7 +31,7 @@
 
         // Se entrambi i dati sono validi lo script esegue l'autenticazione dell'utente a mezzo delle sue credenziali
         if(!empty($email) && !empty($password)){
-            $utente = verifica($email, $password);
+            $utente = login($email, $password);
             if(!empty($utente)){
                 // Se la verifica ha successo viene creata la sessione e si viene reindirizzati alla pagina di amministrazione
                 $_SESSION["logged_in"] = true;

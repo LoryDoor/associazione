@@ -3,9 +3,9 @@
         FILE: associazione/elabora-registrazione.php
         Contenuto: Pagina di validazione dei dati inseriti nel form di registrazione e di responso per l'utente
         AUTORE: Lorenzo Porta - 5FIN - ITT "G. Fauser" di Novara
-        ULTIMA MODIFICA: 12/12/2025
+        ULTIMA MODIFICA: 31/01/2026
     */
-    include("libs/funzioni.php");
+    require_once "libs/funzioni.php";
     use libs\Socio;
 
     if($_SERVER["REQUEST_METHOD"] != "POST"){
@@ -79,14 +79,9 @@
                         echo "<div class='errore'>ERRORE: Compilare opportunamente il campo &quotEmail&quot.</div>";
                     }
                     else if(!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)){
-                        // ... deve rispettare il formato standard di un'email e ...
+                        // ... deve rispettare il formato standard di un'email
                         $errore = true;
                         echo "<div class='errore'>ERRORE: Compilare opportunamente il campo &quotEmail&quot.</div>";
-                    }
-                    else if(email_presente($_POST["email"])){
-                        // ... deve essere univoca per quel socio
-                        $errore = true;
-                        echo "<div class='errore'>ERRORE: Questa email è già registrata nel nostro sistema.</div>";
                     }
 
                     if(empty($_POST["telefono"])){
@@ -124,9 +119,71 @@
                         exit;
                     }
                     else{
-                        // Se non ci sono errori viene stampato un messaggio di cortesia e il link per tornare alal pagina principale
-                        echo "<div class='log'>La registrazione è andata a buon fine.<br>Attendi che un amministratore approvi la tua domanda di iscrizione.</div>";
-                        echo "<a href='index.php'>Torna alla pagina principale</a>";
+                        //Altrimenti si procede al caricamento dei file sul server
+                        $errore_file = false; // Variabile per verificare la presenza di errori sulle operazioni con i file
+
+                        // Generazione del percorso di salvataggio del file della fototessera
+                        $path_fototessera = "fototessera_".strtolower($_POST["cognome"])."_".strtolower($_POST["nome"]).".jpg";
+                        $path_fototessera = genera_file_path($path_fototessera, DIR_FOTOTESSERA);
+                        // Spostamento del file della fototessera dalla posizione temporanea di upload alla posizione definitiva
+                        $errore_file = !move_uploaded_file($_FILES["fototessera"]["tmp_name"], $path_fototessera);
+
+                        // Generazione del percorso di salvataggio del file della carta di identità
+                        $path_cartaidentita = "carta_identita_".strtolower($_POST["cognome"])."_".strtolower($_POST["nome"]).".pdf";
+                        $path_cartaidentita = genera_file_path($path_cartaidentita, DIR_CARTA_IDENTITA);
+                        // Spostamento del file della carta di identità dalla posizione temporanea di upload alla posizione definitiva
+                        $errore_file = !move_uploaded_file($_FILES["cartaidentita"]["tmp_name"], $path_cartaidentita);
+
+                        // Generazione del percorso di salvataggio del file della presentazione
+                        $path_presentazione = "presentazione_".strtolower($_POST["cognome"])."_".strtolower($_POST["nome"]).".txt";
+                        $path_presentazione = genera_file_path($path_presentazione, DIR_PRESENTAZIONE);
+                        // Creazione del file e scrittura sul file della presentazione digitata dall'utente
+                        $file =  fopen($path_presentazione, "w");
+                        if(!fwrite($file, $_POST["presentazione"])){
+                            $errore_file = true;
+                        }
+                        fclose($file);
+
+                        // Generazione del percorso di salvataggio del file del QR code
+                        $path_qrcode = "qrcode_".strtolower($_POST["cognome"])."_".strtolower($_POST["nome"]).".png";
+                        $path_qrcode = genera_file_path($path_qrcode, DIR_QR_CODE);
+
+                        // Generazione del percorso di salvataggio del file della tessera associativa
+                        $path_tessera = "tessera_".strtolower($_POST["cognome"])."_".strtolower($_POST["nome"]).".pdf";
+                        $path_tessera = genera_file_path($path_tessera, DIR_CARTA_IDENTITA);
+
+                        if($errore_file){
+                            // Se c'è stato un errore viene comunicato tramite un messaggio
+                            echo "<div class='error'>ERRORE: Non è stato possibile caricare uno o più file sul server. Riprovare più tardi.</div>";
+                        }
+                        else{
+                            // Altrimenti viene creata l'istanza del nuovo socio ...
+                            $socio = new Socio(
+                                    1,
+                                    strtolower($_POST["cognome"]),
+                                    strtolower($_POST["nome"]),
+                                    $_POST["data-nascita"],
+                                    $_POST["sesso"],
+                                    $_POST["altezza"],
+                                    $_POST["professione"],
+                                    $_POST["email"],
+                                    $_POST["telefono"],
+                                    $path_fototessera,
+                                    $path_cartaidentita,
+                                    $path_presentazione,
+                                    $path_qrcode,
+                                    $path_tessera,
+                                    (new DateTime())->format("Y-m-d H:i:s"),
+                                    STATO_REGISTRATO
+                            );
+                            // ... e viene aggiornata la tabella dei soci
+                            if(aggiungi_socio($socio)){
+                                // Se il nuovo socio è stato aggiunto correttamente viene stampato un messaggio di
+                                // cortesia e il link per tornare alla pagina principale
+                                echo "<div class='log'>La registrazione è andata a buon fine.<br>Attendi che un amministratore approvi la tua domanda di iscrizione.</div>";
+                                echo "<a href='index.php'>Torna alla pagina principale</a>";
+                            }
+                        }
                     }
                 ?>
             </div>
@@ -185,53 +242,3 @@
         </footer>
     </body>
 </html>
-
-<?php
-    $errore_file = false; // Variabile per verificare la presenza di errori sulle operazioni con i file
-
-    // Generazione del percorso di salvataggio del file della fototessera
-    $path_fototessera = "fototessera_".strtolower($_POST["cognome"])."_".strtolower($_POST["nome"]).".jpg";
-    $path_fototessera = genera_file_path($path_fototessera, DIR_FOTOTESSERA);
-    // Spostamento del file della fototessera dalla posizione temporanea di upload alla posizione definitiva
-    $errore_file = !move_uploaded_file($_FILES["fototessera"]["tmp_name"], $path_fototessera);
-
-    // Generazione del percorso di salvataggio del file della carta di identità
-    $path_cartaidentita = "carta_identita_".strtolower($_POST["cognome"])."_".strtolower($_POST["nome"]).".pdf";
-    $path_cartaidentita = genera_file_path($path_cartaidentita, DIR_CARTA_IDENTITA);
-    // Spostamento del file della carta di identità dalla posizione temporanea di upload alla posizione definitiva
-    $errore_file = !move_uploaded_file($_FILES["cartaidentita"]["tmp_name"], $path_cartaidentita);
-
-    // Generazione del percorso di salvataggio del file della presentazione
-    $path_presentazione = "presentazione_".strtolower($_POST["cognome"])."_".strtolower($_POST["nome"]).".txt";
-    $path_presentazione = genera_file_path($path_presentazione, DIR_PRESENTAZIONE);
-    // Creazione del file e scrittura sul file della presentazione digitata dall'utente
-    $file =  fopen($path_presentazione, "w");
-    if(!fwrite($file, $_POST["presentazione"])){
-        $errore_file = true;
-    }
-    fclose($file);
-
-    // Generazione del percorso di salvataggio del file del QR code
-    $path_qrcode = "qrcode_".strtolower($_POST["cognome"])."_".strtolower($_POST["nome"]).".png";
-    $path_qrcode = genera_file_path($path_qrcode, DIR_QR_CODE);
-
-    // Generazione del percorso di salvataggio del file della tessera associativa
-    $path_tessera = "tessera_".strtolower($_POST["cognome"])."_".strtolower($_POST["nome"]).".pdf";
-    $path_tessera = genera_file_path($path_tessera, DIR_CARTA_IDENTITA);
-
-    if($errore_file){
-        // Se c'è stato un errore viene comunicato tramite un messaggio
-        echo "<div class='error'>ERRORE: Non è stato possibile caricare uno o più file sul server. Riprovare più tardi.</div>";
-    }
-    else{
-        // Altrimenti viene creata l'istanza del nuovo socio ...
-        $socio = new Socio(
-                conta_soci()+1, strtolower($_POST["cognome"]), strtolower($_POST["nome"]), $_POST["data-nascita"],
-                $_POST["sesso"], $_POST["altezza"], $_POST["professione"], $_POST["email"], $_POST["telefono"],
-                $path_fototessera, $path_cartaidentita, $path_presentazione, $path_qrcode, $path_tessera,
-                (new DateTime())->format("Y-m-d H:i:s"), STATO_REGISTRATO
-        );
-        // ... e viene aggiornata la lista dei soci
-        lista_aggiungi_socio($socio);
-    }
-?>

@@ -1,11 +1,11 @@
 <?php
     /*
         FILE: associazione/index.php
-        Contenuto: Pagina principale del sito
+        CONTENUTO: Pagina principale del sito
         AUTORE: Lorenzo Porta - 5FIN - ITT "G. Fauser" di Novara
-        ULTIMA MODIFICA: 12/12/2025
+        ULTIMA MODIFICA: 31/01/2026
     */
-    include("libs/funzioni.php");
+    require_once "libs/funzioni.php";
     use libs\Socio;
 ?>
 
@@ -48,9 +48,12 @@
                 <div class="container-soci">
                     <?php
                         // Generazione dinamica della lista dei soci in stato EFFETTIVO
-                        $soci = carica_soci();
-                        foreach ($soci as $socio) {
-                            if($socio->getStato() == STATO_EFFETTIVO){
+                        $soci = carica_soci(STATO_EFFETTIVO);
+                        if(empty($soci)){
+                            echo "Al momento non ci sono soci effettivi.";
+                        }
+                        else{
+                            foreach ($soci as $socio) {
                                 echo genera_card($socio->getCodiceSocio(), $socio->getCognome(), $socio->getNome());
                             }
                         }

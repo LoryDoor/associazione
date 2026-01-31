@@ -6,7 +6,8 @@
     ULTIMA MODIFICA: 12/12/2025
 */
 
-include("Socio.php");
+require_once "connessione.php";
+require_once "Socio.php";
 use libs\Socio;
 
 // Costanti comuni a tutto il codice
@@ -16,8 +17,6 @@ const DIR_FOTOTESSERA = DIR_DOCUMENTI_SOCI."fototessera/";
 const DIR_PRESENTAZIONE =  DIR_DOCUMENTI_SOCI."presentazione/";
 const DIR_TESSERA = DIR_DOCUMENTI_SOCI."tessera/";
 const DIR_QR_CODE = DIR_TESSERA."qrcode/";
-const PATH_LISTA_SOCI = DIR_DOCUMENTI_SOCI."soci.txt";
-const FILE_AMMINISTRATORI = "./amministratori.txt";
 const STATO_REGISTRATO = "REGISTRATO";
 const STATO_EFFETTIVO = "EFFETTIVO";
 const ALTEZZA_MIN = 0.8;
@@ -34,43 +33,26 @@ const REGEX_TEL = "/^(\+?\d{1,3})?[-\s]?\(?\d{2,4}\)?[-\s]?\d{2,4}[-\s]?\d{2,4}$
      - \d{2,4}: Le ultime cifre.
  */
 
-// Recupera gli utenti dal file degli amministratori per la procedura di autenticazione
-function caricaUtenti(): array
-{
-    $utenti = [];
-
-    try{
-        $file = fopen(FILE_AMMINISTRATORI, "r");
-        while(!feof($file)){
-            $line = fgets($file);
-            $data = explode(";", $line);
-
-            $utenti[trim($data[1])] = [
-                "nome" => trim($data[0]),
-                "password" => trim($data[2])
-            ];
-        }
-        fclose($file);
-    }
-    catch(Exception $ex){
-        echo "<div class='errore'>".$ex->getMessage()."</div>";
-    }
-
-    return $utenti;
-}
-
 // Esegue la procedura di autenticazione per l'accesso all'area riservata
-function verifica($email, $password): array
+function login($email, $password): array
 {
-    $utenti = caricaUtenti();
+    global $mysqli;
+    $query = "CALL cerca_persona('" . $email . "', '" . $password . "')";
 
-    if (array_key_exists($email, $utenti)) {
-        if(password_verify($password, $utenti[$email]["password"])){
-            return [
-                "email" => $email,
-                "nome" => $utenti[$email]["nome"]
-            ];
-        }
+    $result = null;
+    try{
+        $result = $mysqli->query($query);
+    }
+    catch(mysqli_sql_exception $ex){
+        echo "<div class='error'>Errore nell'esecuzione della query: " . $ex->getMessage() . "</div>";
+    }
+
+    if($result->num_rows == 1){
+        $data = $result->fetch_assoc();
+        return [
+            "email" => $data["Email"],
+            "nome" => $data["NomeUtente"]
+        ];
     }
 
     return [];
@@ -90,45 +72,49 @@ function genera_file_path($base_file_name, $dir): string
     return $file_path;
 }
 
-// Controlla se esiste un socio che si sia già registrato con l'email passata come parametro
-function email_presente($email): bool
+// Aggiunge una nuova tupla alla tabella soci e restituisce un flag booleano sull'esito dell'inserimento
+function aggiungi_socio(Socio $socio) : bool
 {
-    $content = file(PATH_LISTA_SOCI, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
+    global $mysqli;
 
-    foreach ($content as $line) {
-        $data = explode(";", $line);
-        if($data[7] == $email){
+    $query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'db_associazione' AND TABLE_NAME = 'Soci'";
+    try{
+        $result = $mysqli->query($query);
+    }
+    catch(mysqli_sql_exception $ex){
+        echo "<div class='error'>Errore nell'esecuzione della query: " . $ex->getMessage() . "</div>";
+        return false;
+    }
+
+    if($result->num_rows > 0){
+        $result->fetch_array(); // consumo la prima riga che contiene il campo ID
+
+        $arrCampi = [];
+        while($data = $result->fetch_array()){
+            $arrCampi[] = $data['COLUMN_NAME'];
+        }
+        $campiTabella = implode(", ", $arrCampi);
+
+        $query = "INSERT INTO Soci ($campiTabella) VALUES " . $socio->toInsertRecord();
+        try{
+            $result = $mysqli->query($query);
+        }
+        catch(mysqli_sql_exception $ex){
+            echo "<div class='error'>Errore nell'esecuzione della query: " . $ex->getMessage() . "</div>";
+            return false;
+        }
+
+        if($result){
+            echo "<div class='log'>Inserimento dei dati avvenuto con successo";
             return true;
         }
     }
+    else {
+        echo "<div class='warning'>La query non ha prodotto risultati: " . $mysqli->error . "</div>";
+        return false;
+    }
 
     return false;
-}
-
-// Modifica il file della lista dei soci per aggiungere un nuovo record
-function lista_aggiungi_socio(Socio $socio){
-    $file = fopen(PATH_LISTA_SOCI, "a");
-    fwrite($file, $socio->toString());
-    fclose($file);
-}
-
-// Modifica il file della lista dei soci quando si modificano i valori di uno dei record o quando uno di questi viene
-// eliminato
-function lista_aggiorna_soci($nuovi_soci){
-    $file = fopen(PATH_LISTA_SOCI, "w");
-    foreach($nuovi_soci as $line){
-        fwrite($file, $line);
-    }
-    fclose($file);
-}
-
-// Restituisce il numero di socio successivo a quello memorizzato nell'ultimo record del file dei soci
-function conta_soci(): int
-{
-	$content = file(PATH_LISTA_SOCI, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
-    $last_line = $content[count($content) - 1];
-    $data = explode(";", $last_line);
-    return ((int) $data[0]);
 }
 
 // Restituisce un testo in formato HTML che rappresenta la "card del socio" visibile nella pagina principale
@@ -146,12 +132,26 @@ function genera_card($id, $cognome, $nome) : string
 }
 
 // Crea un array di istanze della classe Socio partendo dai record presenti nel file dei soci
-function carica_soci(): array
+function carica_soci($stato = null): array
 {
-    $content = file(PATH_LISTA_SOCI, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
+    global $mysqli;
+
+    $query = "SELECT * FROM Soci";
+    if($stato != null){
+        $query = "SELECT * FROM Soci WHERE Stato = '" . $stato . "'";
+    }
+    try {
+        $result = $mysqli->query($query);
+    }
+    catch (mysqli_sql_exception $ex){
+        echo "<div class='error'>Errore nell'esecuzione della query: " . $ex->getMessage() . "</div>";
+    }
+
     $soci = [];
-    foreach ($content as $line) {
-        $soci[] = Socio::crea_da_linea(trim($line));
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_array()) {
+            $soci[] = Socio::crea_da_result_set($row);
+        }
     }
 
     return $soci;
@@ -159,12 +159,19 @@ function carica_soci(): array
 
 // Cerca il socio il cui ID è passato come parametro e lo restituisce, se non lo trova restituisce null.
 function cerca_socio($id){
-    $soci = carica_soci();
+    global $mysqli;
+    $query = "SELECT * FROM Soci WHERE ID = '" . $id . "'";
 
-    foreach ($soci as $socio){
-        if($socio->getCodiceSocio() == $id){
-            return $socio;
-        }
+    try{
+        $result = $mysqli->query($query);
+    }
+    catch(mysqli_sql_exception $ex){
+        echo "<div class='error'>Errore nell'esecuzione della query: " . $ex->getMessage() . "</div>";
+    }
+
+    if($result->num_rows > 0){
+        $row = $result->fetch_array();
+        return Socio::crea_da_result_set($row);
     }
 
     return null;
@@ -179,90 +186,79 @@ function stampa_presentazione($file_path){
 }
 
 // Stampa su monitor una tabella secondo il formato determinato nella pagina adminer.php contenente la lista dei soci in
-// stato di REGISTRATO
-function stampa_tabella_soci_da_approvare(){
-    $content = file(PATH_LISTA_SOCI, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
-    foreach ($content as $line){
-        $data = explode(";", $line);
-        if($data[15] == STATO_REGISTRATO){
-            echo "
-            <tr class='soci-table'>
-                <td class='soci-table'>".$data[0]."</td>
-                <td class='soci-table'>".ucwords($data[1])."</td>
-                <td class='soci-table'>".ucwords($data[2])."</td>
-                <td class='soci-table'>".$data[3]."</td>
-                <td class='soci-table'>".$data[4]."</td>
-                <td class='soci-table'>".$data[5]."</td>
-                <td class='soci-table'>".ucwords($data[6])."</td>
-                <td class='soci-table'>".$data[7]."</td>
-                <td class='soci-table'>".$data[8]."</td>
-            ";
+// stato di REGISTRATO o EFFETTIVO in base al valore passato come parametro
+function stampa_tabella_soci($stato){
+    global $mysqli;
+    $query = "SELECT * FROM Soci WHERE Stato = '$stato'";
 
-            $href_fototessera = DIR_FOTOTESSERA . $data[9];
-            $href_cartaidentia = DIR_CARTA_IDENTITA . $data[10];
-            $href_presentazione = DIR_PRESENTAZIONE . $data[11];
-
-            echo "
-                <td class='soci-table'><a href='$href_fototessera'>Fototessera</a></td>
-                <td class='soci-table'><a href='$href_cartaidentia'>Carta di Identità</a></td>
-                <td class='soci-table'><a href='$href_presentazione'>Presentazione</a></td>
-                <td class='soci-table'>".$data[14]. "</td>
-                <td class='soci-table'>
-                    <!-- Il form contiene dei bottoni generati dinamicamente che collegano alle specifiche azioni gestite
-                     dalla pagina elabora-azione.php -->
-                    <form method='post' action='elabora-azione.php'>
-                        <input class='button-green' type='submit' name='approva' value='Approva'>
-                        <input class='button-red' type='submit' name='respingi' value='Respingi'>
-                        <input type='hidden' name='id' value='$data[0]'>
-                    </form>
-                </td>
-            </tr>
-            ";
-        }
+    try{
+        $result = $mysqli->query($query);
     }
-}
+    catch(mysqli_sql_exception $ex){
+        echo "<div class='error'>Errore nell'esecuzione della query: " . $ex->getMessage() . "</div>";
+    }
 
-// Stampa su monitor una tabella secondo il formato determinato nella pagina adminer.php contenente la lista dei soci in
-// stato di EFFETTIVO
-function stampa_tabella_soci_effettivi(){
-    $content = file(PATH_LISTA_SOCI, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
-    foreach ($content as $line){
-        $data = explode(";", $line);
-        if($data[15] == STATO_EFFETTIVO){
+    if($result->num_rows > 0){
+        while($row = $result->fetch_array()){
             echo "
             <tr class='soci-table'>
-                <td class='soci-table'>".$data[0]."</td>
-                <td class='soci-table'>".$data[1]."</td>
-                <td class='soci-table'>".$data[2]."</td>
-                <td class='soci-table'>".$data[3]."</td>
-                <td class='soci-table'>".$data[4]."</td>
-                <td class='soci-table'>".$data[5]."</td>
-                <td class='soci-table'>".$data[6]."</td>
-                <td class='soci-table'>".$data[7]."</td>
-                <td class='soci-table'>".$data[8]."</td>
+                <td class='soci-table'>".$row[0]."</td>
+                <td class='soci-table'>".ucwords($row[1])."</td>
+                <td class='soci-table'>".ucwords($row[2])."</td>
+                <td class='soci-table'>".$row[3]."</td>
+                <td class='soci-table'>".$row[4]."</td>
+                <td class='soci-table'>".$row[5]."</td>
+                <td class='soci-table'>".ucwords($row[6])."</td>
+                <td class='soci-table'>".$row[7]."</td>
+                <td class='soci-table'>".$row[8]."</td>
             ";
 
-            $href_fototessera = DIR_FOTOTESSERA . $data[9];
-            $href_cartaidentia = DIR_CARTA_IDENTITA . $data[10];
-            $href_presentazione = DIR_PRESENTAZIONE . $data[11];
-            $href_tessera = DIR_TESSERA . $data[13];
+            if($stato == STATO_REGISTRATO){
+                $href_fototessera = DIR_FOTOTESSERA . $row[9];
+                $href_cartaidentia = DIR_CARTA_IDENTITA . $row[10];
+                $href_presentazione = DIR_PRESENTAZIONE . $row[11];
 
-            echo "
-                <td class='soci-table'><a href='$href_fototessera'>Fototessera</a></td>
-                <td class='soci-table'><a href='$href_cartaidentia'>Carta di Identità</a></td>
-                <td class='soci-table'><a href='$href_presentazione'>Presentazione</a></td>
-                <td class='soci-table'><a href='$href_tessera'>Tessera</a></td>
-                <td class='soci-table'>".$data[14]."</td>
-                <td class='soci-table'>
-                    <form method='post' action='elabora-azione.php'>
+                echo "
+                    <td class='soci-table'><a href='$href_fototessera'>Fototessera</a></td>
+                    <td class='soci-table'><a href='$href_cartaidentia'>Carta di Identità</a></td>
+                    <td class='soci-table'><a href='$href_presentazione'>Presentazione</a></td>
+                    <td class='soci-table'>".$row[14]. "</td>
+                    <td class='soci-table'>
                         <!-- Il form contiene dei bottoni generati dinamicamente che collegano alle specifiche azioni gestite
                          dalla pagina elabora-azione.php -->
-                        <input class='button-red' type='submit' name='elimina' value='Elimina'>
-                        <input type='hidden' name='id' value='$data[0]'>
-                    </form>
-                </td>
-            </tr>
-            ";
+                        <form method='post' action='elabora-azione.php'>
+                            <input class='button-green' type='submit' name='approva' value='Approva'>
+                            <input class='button-red' type='submit' name='respingi' value='Respingi'>
+                            <input type='hidden' name='id' value='$row[0]'>
+                        </form>
+                    </td>
+                </tr>
+                ";
+            }
+
+            if($stato == STATO_EFFETTIVO){
+                $href_fototessera = DIR_FOTOTESSERA . $row[9];
+                $href_cartaidentia = DIR_CARTA_IDENTITA . $row[10];
+                $href_presentazione = DIR_PRESENTAZIONE . $row[11];
+                $href_tessera = DIR_TESSERA . $row[13];
+
+                echo "
+                    <td class='soci-table'><a href='$href_fototessera'>Fototessera</a></td>
+                    <td class='soci-table'><a href='$href_cartaidentia'>Carta di Identità</a></td>
+                    <td class='soci-table'><a href='$href_presentazione'>Presentazione</a></td>
+                    <td class='soci-table'><a href='$href_tessera'>Tessera</a></td>
+                    <td class='soci-table'>".$row[14]."</td>
+                    <td class='soci-table'>
+                        <form method='post' action='elabora-azione.php'>
+                            <!-- Il form contiene dei bottoni generati dinamicamente che collegano alle specifiche azioni gestite
+                             dalla pagina elabora-azione.php -->
+                            <input class='button-red' type='submit' name='elimina' value='Elimina'>
+                            <input type='hidden' name='id' value='$row[0]'>
+                        </form>
+                    </td>
+                </tr>
+                ";
+            }
         }
     }
 }

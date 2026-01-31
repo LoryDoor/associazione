@@ -6,7 +6,7 @@
         ULTIMA MODIFICA: 12/12/2025
     */
     session_start();
-    include("libs/funzioni.php");
+    require_once "libs/funzioni.php";
 
     if($_SERVER["REQUEST_METHOD"] == "POST"){
         if(isset($_POST["logout"])){
@@ -65,7 +65,7 @@
                         <?php
                             // La generazione del contenuto della tabella avviene dinamicamente tramite la funzione apposita
                             // che recupera i dati dai record memorizzati nel file dei soci
-                            stampa_tabella_soci_da_approvare();
+                            stampa_tabella_soci(STATO_REGISTRATO);
                         ?>
                     </table>
                 </div>
@@ -95,7 +95,7 @@
                         <?php
                             // La generazione del contenuto della tabella avviene dinamicamente tramite la funzione apposita
                             // che recupera i dati dai record memorizzati nel file dei soci
-                            stampa_tabella_soci_effettivi();
+                            stampa_tabella_soci(STATO_EFFETTIVO);
                         ?>
                     </table>
                 </div>

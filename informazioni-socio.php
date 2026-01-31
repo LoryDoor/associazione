@@ -5,7 +5,7 @@
         AUTORE: Lorenzo Porta - 5FIN - ITT "G. Fauser" di Novara
         ULTIMA MODIFICA: 12/12/2025
     */
-    include("libs/funzioni.php");
+    require_once "libs/funzioni.php";
     use libs\Socio;
 
     if(!isset($_GET["id"])){
@@ -42,7 +42,7 @@
     <?php
         if($errore){
             // Se si è verificato un errore lo comunico all'utente e termino lo script, altrimenti vengono stampate a
-            // a video le informazioni sul socio
+            // video le informazioni sul socio
             echo "<div class='container'>
                 <div class='errore'>Non è possibile generare la pagina di questo socio.</div>
                 <a href='index.php'>Torna alla pagina principale</a>

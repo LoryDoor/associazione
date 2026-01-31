@@ -1,9 +1,9 @@
 <?php
 /*
     FILE: associazione/libs/Socio.php
-    Contenuto: Classe Socio per lavorare agilmente i dati del record di memorizzazione dei soci
+    CONTENUTO: Classe Socio per lavorare agilmente i dati del record di memorizzazione dei soci
     AUTORE: Lorenzo Porta - 5FIN - ITT "G. Fauser" di Novara
-    ULTIMA MODIFICA: 12/12/2025
+    ULTIMA MODIFICA: 30/01/2026
 */
 
 namespace libs;
@@ -11,7 +11,7 @@ use DateTime;
 
 class Socio
 {
-	private $codice_socio ;
+	private $codice_socio;
     private $cognome;
     private $nome;
     private $data_nascita;
@@ -35,7 +35,7 @@ class Socio
         string $stato
     )
     {
-		$this->codice_socio = str_pad($codice_socio, 4, '0', STR_PAD_LEFT);
+		$this->codice_socio = $codice_socio;
         $this->cognome = $cognome;
         $this->nome = $nome;
         $this->data_nascita = new DateTime($data_nascita);
@@ -53,12 +53,12 @@ class Socio
         $this->stato = $stato;
     }
 
-    // Crea un'istanza della classe socio partendo dal record del file dei soci
-    public static function crea_da_linea(string $linea) : Socio
+    // Crea un'istanza della classe socio partendo da una tupla del database
+    public static function crea_da_result_set(array $result) : Socio
     {
-        $dati = explode(";", $linea);
-        return new Socio($dati[0], $dati[1], $dati[2], $dati[3], $dati[4], $dati[5],  $dati[6], $dati[7], $dati[8],
-            $dati[9], $dati[10], $dati[11], $dati[12], $dati[13], $dati[14], $dati[15]);
+        return new Socio($result[0], $result[1], $result[2], $result[3], $result[4], $result[5],  $result[6],
+            $result[7], $result[8], $result[9], $result[10], $result[11], $result[12], $result[13], $result[14],
+            $result[15]);
     }
 
     // Metodi getter
@@ -161,5 +161,36 @@ class Socio
             ";$this->sesso;$this->altezza;$this->professione;$this->email;$this->telefono;" .
             "$this->fileName_fototessera;$this->fileName_cartaIdentita;$this->fileName_presentazione;$this->fileName_qrcode;$this->fileName_tessera;" .
             $this->data_ora_iscrizione->format("Y-m-d H:i:s") . ";$this->stato\n";
+    }
+
+    public function toInsertRecord() : string
+    {
+        return
+            "('$this->cognome'," .
+            "'$this->nome'," .
+            "'" . $this->data_nascita->format("Y-m-d") . "'," .
+            "'$this->sesso'," .
+            "$this->altezza," .
+            "'$this->professione'," .
+            "'$this->email'," .
+            "'$this->telefono'," .
+            "'$this->fileName_fototessera'," .
+            "'$this->fileName_cartaIdentita'," .
+            "'$this->fileName_presentazione'," .
+            "'$this->fileName_qrcode'," .
+            "'$this->fileName_tessera'," .
+            "'" . $this->data_ora_iscrizione->format("Y-m-d H:i:s") . "'," .
+            "'$this->stato')";
+    }
+
+    public function toArray() : array
+    {
+        return [
+            $this->cognome, $this->nome, $this->data_nascita->format("Y-m-d"),
+            $this->sesso, $this->altezza, $this->professione, $this->email, $this->telefono,
+            $this->fileName_fototessera, $this->fileName_cartaIdentita, $this->fileName_presentazione,
+            $this->fileName_qrcode, $this->fileName_tessera, $this->data_ora_iscrizione->format("Y-m-d H:i:s"),
+            $this->stato
+        ];
     }
 }

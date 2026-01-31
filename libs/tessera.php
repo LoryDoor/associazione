@@ -3,12 +3,12 @@
     FILE: associazione/libs/tessera.php
     Contenuto: Libreria ad-hoc per la creazione della tessera associativa e del relativo QR code
     AUTORE: Lorenzo Porta - 5FIN - ITT "G. Fauser" di Novara
-    ULTIMA MODIFICA: 12/12/2025
+    ULTIMA MODIFICA: 31/01/2026
 */
 
-include("funzioni.php");
-include("phpqrcode/phpqrcode.php"); // Libreria per la generazione di codici QR
-include("fpdf/fpdf.php"); // Libreria per la creazione di file in formato PDF tramite script
+require_once "funzioni.php";
+require_once "phpqrcode/phpqrcode.php"; // Libreria per la generazione di codici QR
+require_once "fpdf/fpdf.php"; // Libreria per la creazione di file in formato PDF tramite script
 use libs\Socio;
 
 // Costanti specifiche per la tessera
