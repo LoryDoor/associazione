@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/253b58f3-21ef-49eb-ab5b-079daacaf1bc/console.sql" value="253b58f3-21ef-49eb-ab5b-079daacaf1bc" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/253b58f3-21ef-49eb-ab5b-079daacaf1bc/console_1.sql" value="253b58f3-21ef-49eb-ab5b-079daacaf1bc" />
+    <file url="file://$PROJECT_DIR$/libs/funzioni.php" value="253b58f3-21ef-49eb-ab5b-079daacaf1bc" />
+    <file url="file://$PROJECT_DIR$/query/db_associazione.sql" value="253b58f3-21ef-49eb-ab5b-079daacaf1bc" />
+  </component>
+</project>

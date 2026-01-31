@@ -23,9 +23,9 @@ I soci possono registrarsi tramite un form che richiede le seguenti informazioni
 - Errori di validazione (ad esempio, formato errato della data o email già registrata) vengono segnalati all’utente.
 
 ### Memorizzazione dei dati
-I dati dei soci vengono memorizzati in un file di testo `soci.txt`. Ogni socio ha un codice univoco progressivo e un campo “stato” che può essere:
-- **registrato**: il socio è registrato ma non ancora approvato dall'amministratore.
-- **effettivo**: la registrazione è stata approvata dall'amministratore.
+I dati dei soci vengono memorizzati in un database. Ogni socio ha un codice univoco progressivo e un campo “stato” che può essere:
+- **REGISTRATO**: il socio è registrato ma non ancora approvato dall'amministratore.
+- **EFFETTIVO**: la registrazione è stata approvata dall'amministratore.
 
 **File aggiuntivi**:
 - Le fototessere e i documenti PDF vengono salvati in cartelle dedicate.
@@ -48,7 +48,7 @@ Tecniche di gestione dei file impediscono la sovrascrittura dei dati (foto, PDF,
   - QR Code che rimanda alla pagina del socio nella sezione pubblica
 
 ### Autenticazione Amministratori
-Gli amministratori accedono alla sezione riservata tramite credenziali memorizzate in un file di testo `amministratori.txt` con password criptata (`password_hash`).
+Gli amministratori accedono alla sezione riservata tramite credenziali memorizzate in un database con password criptata (`SHA256`).
 
 ## Tecnologie utilizzate
 - **FPDF**: Libreria PHP per la generazione della tessera associativa in formato PDF

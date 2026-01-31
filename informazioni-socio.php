@@ -71,7 +71,7 @@
                         </td>
 
                         <th class="info-socio">Codice socio:</th>
-                        <td class="info-socio"><?php echo ucwords($socio->getCodiceSocio()) ?></td>
+                        <td class="info-socio"><?php echo str_pad($socio->getCodiceSocio(), 4, "0", STR_PAD_LEFT); ?></td>
                     </tr>
                     <tr class="info-socio">
                         <th class="info-socio">Cognome:</th>
@@ -85,8 +85,8 @@
                         <th class="info-socio">Età:</th>
                         <td class="info-socio">
                             <?php
-                            $eta = (new DateTime())->diff($socio->getDataNascita())->y;
-                            echo "$eta anni";
+                                $eta = (new DateTime())->diff($socio->getDataNascita())->y;
+                                echo "$eta anni";
                             ?>
                         </td>
                     </tr>

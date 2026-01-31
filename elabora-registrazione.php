@@ -5,6 +5,7 @@
         AUTORE: Lorenzo Porta - 5FIN - ITT "G. Fauser" di Novara
         ULTIMA MODIFICA: 31/01/2026
     */
+
     require_once "libs/funzioni.php";
     use libs\Socio;
 
@@ -182,6 +183,9 @@
                                 // cortesia e il link per tornare alla pagina principale
                                 echo "<div class='log'>La registrazione è andata a buon fine.<br>Attendi che un amministratore approvi la tua domanda di iscrizione.</div>";
                                 echo "<a href='index.php'>Torna alla pagina principale</a>";
+                            }
+                            else{
+                                echo "<div class='error'>Si è verificato un errore nell'inserimento dei dati.</div>";
                             }
                         }
                     }

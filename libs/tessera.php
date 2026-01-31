@@ -15,7 +15,7 @@ use libs\Socio;
 const NOME_ASSOCIAZIONE = "Regno Carlino";
 const PATH_LOGO = "resources/logo.jpg";
 const PATH_FILIGRANA = "resources/filigrana.png";
-const URL_BASE = "https://labs3.fauser.edu/~web12778/associazione/informazioni-socio.php?id=";
+const URL_BASE = "https://labs3.fauser.edu/~web12778/associazione_db/informazioni-socio.php?id=";
 const CARD_WIDTH = 85.6; // mm
 const CARD_HEIGHT = 53.98; // mm
 const COLORE_SFONDO = array(255, 213, 228); // Rosa pastello
@@ -34,7 +34,7 @@ function crea_codice_qr(string $url) : string
 
 function crea_tessera(Socio $socio){
     // Dati del socio per cui verrà creata la tessera
-    $codice = $socio->getCodiceSocio();
+    $codice = str_pad($socio->getCodiceSocio(), 4, "0", STR_PAD_LEFT);
     $nome = ucwords($socio->getNome());
     $cognome = ucwords($socio->getCognome());
     $altezza = $socio->getAltezza();

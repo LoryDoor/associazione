@@ -42,13 +42,6 @@ CREATE TABLE IF NOT EXISTS Amministratori (
     PasswordHash char(255) NOT NULL
 );
 
-INSERT INTO Amministratori (NomeUtente, Email, PasswordHash) VALUES
-    ('LORENZO PORTA', 'lorenzo.porta@studenti.fauser.edu', SHA2('porta', 256)),
-    ('DAVIDE BALDINU', 'davide.baldinu@studenti.fauser.edu', SHA2('baldinu', 256)),
-    ('FRANCESCO CAMPANELLO', 'francesco.campanello@studenti.fauser.edu', SHA2('campanello', 256)),
-    ('MARCO FERRARI', 'marco.ferrari@docenti.fauser.edu', SHA2('ferrari', 256)),
-    ('PAOLA PIRRÒ', 'paola.pirro@docenti.fauser.edu', SHA2('pirro', 256));
-
 DELIMITER $$
 
 CREATE PROCEDURE IF NOT EXISTS cerca_persona(

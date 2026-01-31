@@ -77,12 +77,23 @@ function aggiungi_socio(Socio $socio) : bool
 {
     global $mysqli;
 
-    $query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'db_associazione' AND TABLE_NAME = 'Soci'";
+    // Debug: verifica connessione
+    if (!$mysqli) {
+        error_log("ERRORE: Connessione al database non disponibile");
+        return false;
+    }
+
+    $query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'db12778' AND TABLE_NAME = 'Soci'";
     try{
         $result = $mysqli->query($query);
+
+        if (!$result) {
+            echo "<div class='error'>Errore nella query: " . htmlspecialchars($mysqli->error) . "</div>";
+            return false;
+        }
     }
     catch(mysqli_sql_exception $ex){
-        echo "<div class='error'>Errore nell'esecuzione della query: " . $ex->getMessage() . "</div>";
+        echo "<div class='error'>Errore nell'esecuzione della query: " . htmlspecialchars($ex->getMessage()) . "</div>";
         return false;
     }
 
@@ -121,6 +132,7 @@ function aggiungi_socio(Socio $socio) : bool
 function genera_card($id, $cognome, $nome) : string
 {
     $id_url = urlencode($id);
+    $id = str_pad($id, 4, "0", STR_PAD_LEFT);
     $cognome = ucfirst($cognome);
     $nome = ucfirst($nome);
     return "
@@ -140,6 +152,7 @@ function carica_soci($stato = null): array
     if($stato != null){
         $query = "SELECT * FROM Soci WHERE Stato = '" . $stato . "'";
     }
+
     try {
         $result = $mysqli->query($query);
     }
