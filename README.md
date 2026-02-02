@@ -53,5 +53,6 @@ Gli amministratori accedono alla sezione riservata tramite credenziali memorizza
 ## Tecnologie utilizzate
 - **FPDF**: Libreria PHP per la generazione della tessera associativa in formato PDF
 - **PHP QR Code**: Libreria PHP per la generazione del QR Code
+- Database **MariaDB**
 
 Realizzato da: Lorenzo Porta; ITT "G. Fauser" - Novara; A.S. 2024/2025
